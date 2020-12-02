@@ -1,11 +1,17 @@
 import sys
+import re
 
 
 def read_numbers_from_file(puzzle):
+    string_list = read_strings_from_file(puzzle)
+    return list(map(int, string_list))
+
+
+def read_strings_from_file(puzzle):
     filename = "input_{}.txt".format(puzzle)
     with open(filename, "r") as f:
         data_list = f.readlines()
-    return list(map(int, data_list))
+    return data_list
 
 
 def find_additive_pair_in_list(goal, sequence):
@@ -16,6 +22,34 @@ def find_additive_pair_in_list(goal, sequence):
             return first_num*(goal - first_num)
     print("not found :(")
     return 0
+
+
+def parse_password_policies(raw_lines):
+    """
+    day 2: from list of strings to list of dicts
+    e.g.: '10-17 r: rrrrrrrrrhrrrrrrrr\n' --> {'min': 10, 'max': 17, 'letter': 'r' , 'psw': 'rrrrrrrrrhrrrrrrrr'}
+
+    :param raw_lines: list of stings
+    :returns: list of dicts {min: <int>, max: <int>, letter: <char> , psw: <strings>}
+    """
+
+    def make_them_int(x):
+        x["min"] = int(x["min"])
+        x["max"] = int(x["max"])
+        return x
+
+    result = []
+    pattern = r"(?P<min>\d+)-(?P<max>\d+) (?P<letter>[a-z]): (?P<psw>[a-z]+)"
+    for line in raw_lines:
+        x = re.search(pattern, line)
+        result.append(make_them_int(x.groupdict()))
+
+    return result
+
+
+def is_valid_psw(policy):
+    occurrence = policy["psw"].count(policy["letter"])
+    return policy["min"] <= occurrence <= policy["max"]
 
 
 def day_1_1():
@@ -35,11 +69,23 @@ def day_1_2():
             break
 
 
+def day_2_1():
+    raw_lines = read_strings_from_file("day2-1")
+    parsed_lines = parse_password_policies(raw_lines)
+    valid_psw_counter = 0
+    for policy in parsed_lines:
+        if is_valid_psw(policy):
+            valid_psw_counter += 1
+    print(valid_psw_counter)
+
+
 def main(args):
     if args[0] == "day1-1":
         day_1_1()
     elif args[0] == "day1-2":
         day_1_2()
+    elif args[0] == "day2-1":
+        day_2_1()
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
