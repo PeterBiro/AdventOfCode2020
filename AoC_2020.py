@@ -47,11 +47,6 @@ def parse_password_policies(raw_lines):
     return result
 
 
-def is_valid_psw(policy):
-    occurrence = policy["psw"].count(policy["letter"])
-    return policy["min"] <= occurrence <= policy["max"]
-
-
 def day_1_1():
     numbers = read_numbers_from_file("day1-1")
     result = find_additive_pair_in_list(2020, numbers)
@@ -69,14 +64,34 @@ def day_1_2():
             break
 
 
-def day_2_1():
+def day_2_logic(is_valid):
     raw_lines = read_strings_from_file("day2-1")
     parsed_lines = parse_password_policies(raw_lines)
     valid_psw_counter = 0
     for policy in parsed_lines:
-        if is_valid_psw(policy):
+        if is_valid(policy):
             valid_psw_counter += 1
     print(valid_psw_counter)
+
+
+def day_2_1():
+
+    def is_valid_psw(policy):
+        occurrence = policy["psw"].count(policy["letter"])
+        return policy["min"] <= occurrence <= policy["max"]
+
+    day_2_logic(is_valid_psw)
+
+
+def day_2_2():
+
+    def is_valid_psw(policy):
+        pos_1 = policy["min"]-1
+        pos_2 = policy["max"]-1
+        char = policy["letter"]
+        return (char == policy["psw"][pos_1]) != (char == policy["psw"][pos_2])
+
+    day_2_logic(is_valid_psw)
 
 
 def main(args):
@@ -86,6 +101,8 @@ def main(args):
         day_1_2()
     elif args[0] == "day2-1":
         day_2_1()
+    elif args[0] == "day2-2":
+        day_2_2()
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
