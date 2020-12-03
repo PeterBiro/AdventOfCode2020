@@ -1,5 +1,6 @@
 import sys
 import re
+from operator import add  # day3
 
 
 def read_numbers_from_file(puzzle):
@@ -7,10 +8,10 @@ def read_numbers_from_file(puzzle):
     return list(map(int, string_list))
 
 
-def read_strings_from_file(puzzle):
-    filename = "input_{}.txt".format(puzzle)
+def read_strings_from_file(puzzle, keepends=False):
+    filename = "input_{}.txt".format(puzzle, keepends=keepends)
     with open(filename, "r") as f:
-        data_list = f.readlines()
+        data_list = f.read().splitlines()
     return data_list
 
 
@@ -94,6 +95,22 @@ def day_2_2():
     day_2_logic(is_valid_psw)
 
 
+def day_3_1():
+    tree_map = read_strings_from_file("day3-1")
+    v_heading = (3, 1)
+    location = [0, 0]
+    row_len = len(tree_map[0])
+    tree_hit_count = 0
+    while location[1] < len(tree_map)-1:
+        location = list(map(add, location, v_heading))
+        x = location[0] % row_len
+        y = location[1]
+        if tree_map[y][x] == "#":
+            tree_hit_count += 1
+    print(tree_hit_count)
+
+
+
 def main(args):
     if args[0] == "day1-1":
         day_1_1()
@@ -103,6 +120,8 @@ def main(args):
         day_2_1()
     elif args[0] == "day2-2":
         day_2_2()
+    elif args[0] == "day3-1":
+        day_3_1()
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
