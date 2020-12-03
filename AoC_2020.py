@@ -95,19 +95,37 @@ def day_2_2():
     day_2_logic(is_valid_psw)
 
 
-def day_3_1():
-    tree_map = read_strings_from_file("day3-1")
-    v_heading = (3, 1)
+def day_3_logic(tree_map, v_heading):
     location = [0, 0]
     row_len = len(tree_map[0])
     tree_hit_count = 0
-    while location[1] < len(tree_map)-1:
+    while location[1] < len(tree_map) - 1:
         location = list(map(add, location, v_heading))
         x = location[0] % row_len
         y = location[1]
         if tree_map[y][x] == "#":
             tree_hit_count += 1
-    print(tree_hit_count)
+    return tree_hit_count
+
+
+def day_3_1():
+    tree_map = read_strings_from_file("day3-1")
+    hits = day_3_logic(tree_map, (3, 1))
+    print(hits)
+
+
+def day_3_2():
+    tree_map = read_strings_from_file("day3-1")
+    headings = [(1, 1),
+                (3, 1),
+                (5, 1),
+                (7, 1),
+                (1, 2)]
+    hits = 1
+    for vec in headings:
+        hits *= day_3_logic(tree_map, vec)
+    print(hits)
+
 
 
 
@@ -122,6 +140,8 @@ def main(args):
         day_2_2()
     elif args[0] == "day3-1":
         day_3_1()
+    elif args[0] == "day3-2":
+        day_3_2()
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
