@@ -48,6 +48,32 @@ def parse_password_policies(raw_lines):
     return result
 
 
+def read_passports():
+    raw_data = read_strings_from_file("day4-1")
+    passports = []
+    new_passport = []
+    for line in raw_data:
+        if line == "":
+            passports.append(" ".join(new_passport))
+            new_passport = []
+        else:
+            new_passport.append(line)
+    if new_passport:
+        passports.append(" ".join(new_passport))
+    return passports
+
+
+def create_dict_from_string(passport_strings):
+    dict_list = []
+    for line in passport_strings:
+        element = {}
+        for x in line.split():
+            key, value = x.split(":")
+            element[key] = value
+        dict_list.append(element)
+    return dict_list
+
+
 def day_1_1():
     numbers = read_numbers_from_file("day1-1")
     result = find_additive_pair_in_list(2020, numbers)
@@ -127,6 +153,22 @@ def day_3_2():
     print(hits)
 
 
+def day_4_1():
+
+    def is_valid(p):
+        must_have_keys = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
+        for key in must_have_keys:
+            if key not in p:
+                return False
+        return True
+
+    passport_strings = read_passports()
+    passports = create_dict_from_string(passport_strings)
+    valid_pports = 0
+    for p in passports:
+        if is_valid(p):
+            valid_pports += 1
+    print(valid_pports)
 
 
 def main(args):
@@ -142,6 +184,8 @@ def main(args):
         day_3_1()
     elif args[0] == "day3-2":
         day_3_2()
+    elif args[0] == "day4-1":
+        day_4_1()
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
