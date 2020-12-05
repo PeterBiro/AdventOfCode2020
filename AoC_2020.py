@@ -234,8 +234,20 @@ def day_5_1():
 
     seat_codes = read_strings_from_file("day5-1")
     seat_ids = list(map(code_to_id, seat_codes))
-
     print(max(seat_ids))
+
+    return seat_ids
+
+
+def day_5_2():
+
+    seat_ids = day_5_1()
+    seat_ids.sort()
+    print(seat_ids)
+
+    for i in range(len(seat_ids)-1):
+        if seat_ids[i+1] - seat_ids[i] > 1:
+            print("two seats: {} -- {} and the missing one is {}".format(seat_ids[i], seat_ids[i+1], seat_ids[i]+1))
 
 
 def main(args):
@@ -257,6 +269,8 @@ def main(args):
         day_4_2()
     elif args[0] == "day5-1":
         day_5_1()
+    elif args[0] == "day5-2":
+        day_5_2()
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
