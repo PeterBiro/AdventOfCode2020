@@ -153,6 +153,16 @@ def day_3_2():
     print(hits)
 
 
+def day_4_logic(is_valid):
+    passport_strings = read_passports()
+    passports = create_dict_from_string(passport_strings)
+    valid_pports = 0
+    for p in passports:
+        if is_valid(p):
+            valid_pports += 1
+    return valid_pports
+
+
 def day_4_1():
 
     def is_valid(p):
@@ -162,13 +172,55 @@ def day_4_1():
                 return False
         return True
 
-    passport_strings = read_passports()
-    passports = create_dict_from_string(passport_strings)
-    valid_pports = 0
-    for p in passports:
-        if is_valid(p):
-            valid_pports += 1
-    print(valid_pports)
+    print(day_4_logic(is_valid))
+
+
+def day_4_2():
+
+    def between_nums(inf, sup, value):
+        try:
+            value = int(value)
+        except ValueError:
+            return False
+        if inf <= value <= sup:
+            return True
+        return False
+
+    def is_valid_data(key, value):
+        if key == "byr":
+            return between_nums(1920, 2002, value)
+        elif key == "iyr":
+            return between_nums(2010, 2020, value)
+        elif key == "eyr":
+            return between_nums(2020, 2030, value)
+        elif key == "hgt":
+            pattern = r"(?P<num>\d{2,3})(?P<unit>cm|in)"
+            height = re.match(pattern, value)
+            if height is None:
+                return False
+            if height.groupdict()["unit"] == "in":
+                return between_nums(59, 76, height.groupdict()["num"])
+            else:
+                return between_nums(150, 193, height.groupdict()["num"])
+        elif key == "hcl":
+            pattern = r"#[0-9a-f]{6}"
+            return bool(re.match(pattern, value))
+        elif key == "ecl":
+            return value in {"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}
+        elif key == "pid":
+            pattern = r"\d{9}"
+            return bool(re.match(pattern, value))
+
+    def is_valid(p):
+        must_have_keys = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
+        for key in must_have_keys:
+            if key not in p:
+                return False
+            if not is_valid_data(key, p[key]):
+                return False
+        return True
+
+    print(day_4_logic(is_valid))
 
 
 def main(args):
@@ -186,6 +238,8 @@ def main(args):
         day_3_2()
     elif args[0] == "day4-1":
         day_4_1()
+    elif args[0] == "day4-2":
+        day_4_2()
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
