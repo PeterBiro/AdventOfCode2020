@@ -29,6 +29,15 @@ def read_strings_from_file(puzzle, keepends=False):
     return data_list
 
 
+def print_begin_end(func):
+
+    def inner(puzzle, task):
+        print("Solving {} puzzle's {} task.".format(puzzle.value, task.value))
+        print("Result: {}".format(func(puzzle, task)))
+    return inner
+
+
+@print_begin_end
 def day_1(puzzle, task):
 
     def find_additive_pair_in_list(goal, sequence):
@@ -50,6 +59,7 @@ def day_1(puzzle, task):
             return result*num
 
 
+@print_begin_end
 def day_2(puzzle, task):
 
     def parse_password_policies(raw_lines):
@@ -93,6 +103,7 @@ def day_2(puzzle, task):
     return valid_psw_counter
 
 
+@print_begin_end
 def day_3(puzzle, task):
 
     def trees_in_line(tree_map, v_heading):
@@ -117,6 +128,7 @@ def day_3(puzzle, task):
     return hits
 
 
+@print_begin_end
 def day_4(puzzle, task):
 
     def read_passports():
@@ -208,6 +220,7 @@ def day_4(puzzle, task):
     return valid_pports
 
 
+@print_begin_end
 def day_5(puzzle, task):
 
     def code_to_id(code):
@@ -237,15 +250,15 @@ def main(args):
     day = day_map[args[0]]
 
     if day == Puzzle.DAY_1:
-        print(day_1(day, task))
+        day_1(day, task)
     elif day == Puzzle.DAY_2:
-        print(day_2(day, task))
+        day_2(day, task)
     elif day == Puzzle.DAY_3:
-        print(day_3(day, task))
+        day_3(day, task)
     elif day == Puzzle.DAY_4:
-        print(day_4(day, task))
+        day_4(day, task)
     elif day == Puzzle.DAY_5:
-        print(day_5(day, task))
+        day_5(day, task)
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
