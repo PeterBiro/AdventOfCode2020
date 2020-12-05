@@ -74,16 +74,6 @@ def day_2(puzzle, task):
 
         return result
 
-    def create_dict_from_string(passport_strings):
-        dict_list = []
-        for line in passport_strings:
-            element = {}
-            for x in line.split():
-                key, value = x.split(":")
-                element[key] = value
-            dict_list.append(element)
-        return dict_list
-
     def is_valid(policy):
         if task is Task.FIRST:
             occurrence = policy["psw"].count(policy["letter"])
@@ -143,12 +133,15 @@ def day_4(puzzle, task):
             passports.append(" ".join(new_passport))
         return passports
 
-    def is_valid(p):
-        must_have_keys = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
-        for key in must_have_keys:
-            if key not in p:
-                return False
-        return True
+    def create_dict_from_string(passport_strings):
+        dict_list = []
+        for line in passport_strings:
+            element = {}
+            for x in line.split():
+                key, value = x.split(":")
+                element[key] = value
+            dict_list.append(element)
+        return dict_list
 
     def between_nums(inf, sup, value):
         try:
@@ -183,6 +176,13 @@ def day_4(puzzle, task):
         elif key == "pid":
             pattern = r"^\d{9}$"
             return bool(re.match(pattern, value))
+
+    def is_valid(p):
+        must_have_keys = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
+        for key in must_have_keys:
+            if key not in p:
+                return False
+        return True
 
     def is_valid_2(p):
         must_have_keys = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
