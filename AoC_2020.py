@@ -223,6 +223,21 @@ def day_4_2():
     print(day_4_logic(is_valid))
 
 
+def day_5_1():
+
+    def code_to_id(code):
+        code = code.replace("F", "0")
+        code = code.replace("B", "1")
+        code = code.replace("L", "0")
+        code = code.replace("R", "1")
+        return int(code, 2)
+
+    seat_codes = read_strings_from_file("day5-1")
+    seat_ids = list(map(code_to_id, seat_codes))
+
+    print(max(seat_ids))
+
+
 def main(args):
     if args[0] == "day1-1":
         day_1_1()
@@ -240,6 +255,8 @@ def main(args):
         day_4_1()
     elif args[0] == "day4-2":
         day_4_2()
+    elif args[0] == "day5-1":
+        day_5_1()
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
