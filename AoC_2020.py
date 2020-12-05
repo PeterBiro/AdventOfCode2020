@@ -194,7 +194,7 @@ def day_4_2():
         elif key == "eyr":
             return between_nums(2020, 2030, value)
         elif key == "hgt":
-            pattern = r"(?P<num>\d{2,3})(?P<unit>cm|in)"
+            pattern = r"(?P<num>^\d{2,3})(?P<unit>cm|in$)"
             height = re.match(pattern, value)
             if height is None:
                 return False
@@ -203,12 +203,12 @@ def day_4_2():
             else:
                 return between_nums(150, 193, height.groupdict()["num"])
         elif key == "hcl":
-            pattern = r"#[0-9a-f]{6}"
+            pattern = r"^#[0-9a-f]{6}$"
             return bool(re.match(pattern, value))
         elif key == "ecl":
             return value in {"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}
         elif key == "pid":
-            pattern = r"\d{9}"
+            pattern = r"^\d{9}$"
             return bool(re.match(pattern, value))
 
     def is_valid(p):
