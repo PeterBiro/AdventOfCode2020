@@ -15,6 +15,7 @@ class Puzzle(Enum):
     DAY_3 = "day3"
     DAY_4 = "day4"
     DAY_5 = "day5"
+    DAY_6 = "day6"
 
 
 def read_numbers_from_file(puzzle):
@@ -26,6 +27,13 @@ def read_strings_from_file(puzzle, keepends=False):
     filename = "input_{}.txt".format(puzzle.value)
     with open(filename, "r") as f:
         data_list = f.read().splitlines(keepends=keepends)
+    return data_list
+
+
+def read_blank_line_separated_text(puzzle):
+    filename = "input_{}.txt".format(puzzle.value)
+    with open(filename, "r") as f:
+        data_list = f.read().split("\n\n")
     return data_list
 
 
@@ -242,11 +250,27 @@ def day_5(puzzle, task):
             return seat_ids[i]+1
 
 
+@print_begin_end
+def day_6(puzzle, task):
+
+    def count_distinct(text_list):
+        return len(set("".join(text_list)))
+
+    answer_groups = read_blank_line_separated_text(puzzle)
+    answer_groups = list(map(lambda x: x.split("\n"), answer_groups))
+
+    result = 0
+    for group in answer_groups:
+        result += count_distinct(group)
+
+    return result
+
+
 def main(args):
     task_map = {"first": Task.FIRST, "second": Task.SECOND}
     task = task_map[args[1]]
     day_map ={"day1": Puzzle.DAY_1, "day2": Puzzle.DAY_2, "day3": Puzzle.DAY_3, "day4": Puzzle.DAY_4,
-              "day5": Puzzle.DAY_5}
+              "day5": Puzzle.DAY_5, "day6": Puzzle.DAY_6}
     day = day_map[args[0]]
 
     if day == Puzzle.DAY_1:
@@ -259,6 +283,8 @@ def main(args):
         day_4(day, task)
     elif day == Puzzle.DAY_5:
         day_5(day, task)
+    elif day == Puzzle.DAY_6:
+        day_6(day, task)
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
