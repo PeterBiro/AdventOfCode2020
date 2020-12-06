@@ -139,20 +139,6 @@ def day_3(puzzle, task):
 @print_begin_end
 def day_4(puzzle, task):
 
-    def read_passports():
-        raw_data = read_strings_from_file(puzzle)
-        passports = []
-        new_passport = []
-        for line in raw_data:
-            if line == "":
-                passports.append(" ".join(new_passport))
-                new_passport = []
-            else:
-                new_passport.append(line)
-        if new_passport:
-            passports.append(" ".join(new_passport))
-        return passports
-
     def create_dict_from_string(passport_strings):
         dict_list = []
         for line in passport_strings:
@@ -213,7 +199,8 @@ def day_4(puzzle, task):
                 return False
         return True
 
-    passport_strings = read_passports()
+    raw_data = read_blank_line_separated_text(puzzle)
+    passport_strings = list(map(lambda x: x.replace("\n", " "), raw_data))
     passports = create_dict_from_string(passport_strings)
     valid_pports = 0
 
