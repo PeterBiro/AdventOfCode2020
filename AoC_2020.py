@@ -256,12 +256,18 @@ def day_6(puzzle, task):
     def count_distinct(text_list):
         return len(set("".join(text_list)))
 
+    def count_common(text_list):
+        common = set("abcdefghijklmnopqrestuvwxyz")
+        for text in text_list:
+            common.intersection_update(set(text))
+        return len(common)
+
     answer_groups = read_blank_line_separated_text(puzzle)
     answer_groups = list(map(lambda x: x.split("\n"), answer_groups))
 
     result = 0
     for group in answer_groups:
-        result += count_distinct(group)
+        result += count_distinct(group) if task is Task.FIRST else count_common(group)
 
     return result
 
