@@ -16,6 +16,7 @@ class Puzzle(Enum):
     DAY_4 = "day4"
     DAY_5 = "day5"
     DAY_6 = "day6"
+    DAY_7 = "day7"
 
 
 def read_numbers_from_file(puzzle):
@@ -26,6 +27,7 @@ def read_numbers_from_file(puzzle):
 def read_strings_from_file(puzzle, keepends=False):
     filename = "input_{}.txt".format(puzzle.value)
     with open(filename, "r") as f:
+    # with open("input_day7_example.txt", "r") as f:
         data_list = f.read().splitlines(keepends=keepends)
     return data_list
 
@@ -259,11 +261,68 @@ def day_6(puzzle, task):
     return result
 
 
+@print_begin_end
+def day_7(puzzle, task):
+
+    def parse_rule_lines(rule_lines):
+        parsed_dict = {}
+        in_which = {}
+        for line in rule_lines:
+            color, one_rule = line.split(" bags contain ")
+            one_rule = one_rule.split(", ")
+            pattern = r"^(?P<num>\d) (?P<color>[a-z]+ [a-z]+) bag(s)?(\.)?$"
+            can_have = {}
+            for num_bag in one_rule:
+                if num_bag == "no other bags.":
+                    can_have = None
+                else:
+                    x = re.match(pattern, num_bag)
+                    clr = x.groupdict()["color"]
+                    if clr in in_which:
+                        in_which[clr].add(color)
+                    else:
+                        in_which[clr] = {color}
+                    can_have[clr] = int(x.groupdict()["num"])
+            parsed_dict[color] = can_have
+        return parsed_dict, in_which
+
+    def which_can_contain(clr):
+        if clr in checked:
+            return set()
+        else:
+            checked.add(clr)
+            if clr not in in_which_dict:
+                return set()
+            result = in_which_dict[clr]
+            for new_clr in in_which_dict[clr]:
+                result = result.union(which_can_contain(new_clr))
+            return result
+
+    def how_many_bags(clr):
+
+        print("{} -- {}".format(clr, rules[clr]))
+        if rules[clr] is None:
+            return 0
+        result = 0
+        for new_clr, num in rules[clr].items():
+            result += num + num*how_many_bags(new_clr)
+            print(result)
+        return result
+
+    rule_lines = read_strings_from_file(puzzle)
+    rules, in_which_dict = parse_rule_lines(rule_lines)
+    if task == Task.FIRST:
+        checked = set()
+        return len(which_can_contain("shiny gold"))
+    else:
+        return how_many_bags("shiny gold")
+
+
 def main(args):
     task_map = {"first": Task.FIRST, "second": Task.SECOND}
     task = task_map[args[1]]
     day_map ={"day1": Puzzle.DAY_1, "day2": Puzzle.DAY_2, "day3": Puzzle.DAY_3, "day4": Puzzle.DAY_4,
-              "day5": Puzzle.DAY_5, "day6": Puzzle.DAY_6}
+              "day5": Puzzle.DAY_5, "day6": Puzzle.DAY_6, "day7": Puzzle.DAY_7}
     day = day_map[args[0]]
 
     if day == Puzzle.DAY_1:
@@ -278,6 +337,8 @@ def main(args):
         day_5(day, task)
     elif day == Puzzle.DAY_6:
         day_6(day, task)
+    elif day == Puzzle.DAY_7:
+        day_7(day, task)
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
