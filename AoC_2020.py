@@ -1,5 +1,6 @@
 import sys
 import re
+import copy
 from enum import Enum
 from operator import add  # day3
 
@@ -329,23 +330,42 @@ def day_8(puzzle, task):
             processed_lines.append({"code": a, "num": int(b)})
         return processed_lines
 
+    def run_program(program):
+        ptr = 0
+        acc = 0
+        visited_blocks = set()
+        while True:
+            if ptr not in visited_blocks:
+                visited_blocks.add(ptr)
+                if program[ptr]["code"] == "acc":
+                    acc += program[ptr]["num"]
+                    ptr += 1
+                elif program[ptr]["code"] == "jmp":
+                    ptr += program[ptr]["num"]
+                elif program[ptr]["code"] == "nop":
+                    ptr += 1
+            else:
+                return "infinite", acc
+            if ptr >= len(program):
+                return "terminated", acc
+
     program = read_input()
-    ptr = 0
-    acc = 0
-    visited_blocks = set()
-    while True:
-        if ptr not in visited_blocks:
-            visited_blocks.add(ptr)
-            if program[ptr]["code"] == "acc":
-                acc += program[ptr]["num"]
-                ptr += 1
-            elif program[ptr]["code"] == "jmp":
-                ptr += program[ptr]["num"]
-            elif program[ptr]["code"] == "nop":
-                ptr += 1
-        else:
-            break
-    return acc
+    if task == Task.FIRST:
+        result = run_program(program)
+    else:
+        swap = {"jmp": "nop", "nop": "jmp"}
+        for i in range(len(program)):
+            if program[i]["code"] == "acc":
+                continue
+            else:
+                p = copy.deepcopy(program)
+                p[i]["code"] = swap[p[i]["code"]]
+                result = run_program(p)
+                if result[0] == "terminated":
+                    return result[1]
+
+    return result[1]
+
 
 def main(args):
     task_map = {"first": Task.FIRST, "second": Task.SECOND}
