@@ -17,6 +17,7 @@ class Puzzle(Enum):
     DAY_5 = "day5"
     DAY_6 = "day6"
     DAY_7 = "day7"
+    DAY_8 = "day8"
 
 
 def read_numbers_from_file(puzzle):
@@ -318,11 +319,39 @@ def day_7(puzzle, task):
         return how_many_bags("shiny gold")
 
 
+@print_begin_end
+def day_8(puzzle, task):
+    def read_input():
+        lines = read_strings_from_file(puzzle)
+        processed_lines = []
+        for line in lines:
+            a, b = line.split()
+            processed_lines.append({"code": a, "num": int(b)})
+        return processed_lines
+
+    program = read_input()
+    ptr = 0
+    acc = 0
+    visited_blocks = set()
+    while True:
+        if ptr not in visited_blocks:
+            visited_blocks.add(ptr)
+            if program[ptr]["code"] == "acc":
+                acc += program[ptr]["num"]
+                ptr += 1
+            elif program[ptr]["code"] == "jmp":
+                ptr += program[ptr]["num"]
+            elif program[ptr]["code"] == "nop":
+                ptr += 1
+        else:
+            break
+    return acc
+
 def main(args):
     task_map = {"first": Task.FIRST, "second": Task.SECOND}
     task = task_map[args[1]]
     day_map ={"day1": Puzzle.DAY_1, "day2": Puzzle.DAY_2, "day3": Puzzle.DAY_3, "day4": Puzzle.DAY_4,
-              "day5": Puzzle.DAY_5, "day6": Puzzle.DAY_6, "day7": Puzzle.DAY_7}
+              "day5": Puzzle.DAY_5, "day6": Puzzle.DAY_6, "day7": Puzzle.DAY_7, "day8": Puzzle.DAY_8}
     day = day_map[args[0]]
 
     if day == Puzzle.DAY_1:
@@ -339,6 +368,8 @@ def main(args):
         day_6(day, task)
     elif day == Puzzle.DAY_7:
         day_7(day, task)
+    elif day == Puzzle.DAY_8:
+        day_8(day, task)
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
