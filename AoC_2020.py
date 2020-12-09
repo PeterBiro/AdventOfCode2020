@@ -19,6 +19,10 @@ class Puzzle(Enum):
     DAY_6 = "day6"
     DAY_7 = "day7"
     DAY_8 = "day8"
+    DAY_9 = "day9"
+    DAY_10 = "day10"
+    DAY_11 = "day11"
+    DAY_12 = "day12"
 
 
 def read_numbers_from_file(puzzle):
@@ -367,11 +371,31 @@ def day_8(puzzle, task):
     return result[1]
 
 
+@print_begin_end
+def day_9(puzzle, task):
+    def is_valid(num, the_25):
+        set_of_25 = set(the_25)
+        for x in the_25:
+            if num - 2*x == 0:
+                continue
+            if num - x in set_of_25:
+                return True
+        print("Can't find good elements for {} in {}".format(num, the_25))
+        return False
+
+    numbers = read_numbers_from_file(puzzle)
+    for i in range(25, len(numbers)):
+        if not is_valid(numbers[i], numbers[i-25:i]):
+            return numbers[i]
+    return "all numbers are valid"
+
+
 def main(args):
     task_map = {"first": Task.FIRST, "second": Task.SECOND}
     task = task_map[args[1]]
     day_map ={"day1": Puzzle.DAY_1, "day2": Puzzle.DAY_2, "day3": Puzzle.DAY_3, "day4": Puzzle.DAY_4,
-              "day5": Puzzle.DAY_5, "day6": Puzzle.DAY_6, "day7": Puzzle.DAY_7, "day8": Puzzle.DAY_8}
+              "day5": Puzzle.DAY_5, "day6": Puzzle.DAY_6, "day7": Puzzle.DAY_7, "day8": Puzzle.DAY_8,
+              "day9": Puzzle.DAY_9, "day10": Puzzle.DAY_10, "day11": Puzzle.DAY_11, "day12": Puzzle.DAY_12}
     day = day_map[args[0]]
 
     if day == Puzzle.DAY_1:
@@ -390,6 +414,8 @@ def main(args):
         day_7(day, task)
     elif day == Puzzle.DAY_8:
         day_8(day, task)
+    elif day == Puzzle.DAY_9:
+        day_9(day, task)
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
