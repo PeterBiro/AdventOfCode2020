@@ -382,12 +382,20 @@ def day_9(puzzle, task):
                 return True
         print("Can't find good elements for {} in {}".format(num, the_25))
         return False
-
+    aim = 0
     numbers = read_numbers_from_file(puzzle)
     for i in range(25, len(numbers)):
         if not is_valid(numbers[i], numbers[i-25:i]):
-            return numbers[i]
-    return "all numbers are valid"
+            aim = numbers[i]
+
+    if task == Task.FIRST:
+        return aim
+    else:
+        for i in range(len(numbers)-1):
+            for j in range(i+1, len(numbers)):
+                if aim == sum(numbers[i:j+1]):
+                    return min(numbers[i:j+1]) + max(numbers[i:j+1])
+    return "can't find"
 
 
 def main(args):
