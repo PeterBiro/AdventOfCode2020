@@ -400,18 +400,46 @@ def day_9(puzzle, task):
 
 @print_begin_end
 def day_10(puzzle, task):
-    jolts = sorted(read_numbers_from_file(puzzle))
-    prev = 0
-    diff1_cnt = 0
-    diff3_cnt = 1
-    for voltage in jolts:
-        if voltage - prev == 1:
-            diff1_cnt += 1
-        elif voltage - prev == 3:
-            diff3_cnt += 1
-        prev = voltage
-    return diff1_cnt * diff3_cnt
 
+    def create_diff_list(original_list):
+        prev = 0
+        result = []
+        for num in original_list:
+            result.append(num-prev)
+            prev = num
+        return result
+
+    def tribonacci(n):
+        if n == 0:
+            return 1
+        if n == 1:
+            return 1
+        if n == 2:
+            return 2
+        return tribonacci(n-3) + tribonacci(n-2) + tribonacci(n-1)
+
+    def get_contiguous_list(diff_list):
+        ctr = 0
+        result_list = []
+        for num in diff_list:
+            if num == 1:
+                ctr += 1
+            elif ctr != 0:
+                result_list.append(ctr)
+                ctr = 0
+        return result_list
+
+    jolts = sorted(read_numbers_from_file(puzzle))
+    diff_list = create_diff_list(jolts)
+    diff_list.append(3)  # because of my device
+    if task == Task.FIRST:
+        return diff_list.count(1) * diff_list.count(3)
+    else:
+        contiguous_ones = get_contiguous_list(diff_list)
+        result = 1
+        for num in contiguous_ones:
+            result *= tribonacci(num)
+        return result
 
 
 def main(args):
