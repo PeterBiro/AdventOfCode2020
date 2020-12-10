@@ -398,6 +398,22 @@ def day_9(puzzle, task):
     return "can't find"
 
 
+@print_begin_end
+def day_10(puzzle, task):
+    jolts = sorted(read_numbers_from_file(puzzle))
+    prev = 0
+    diff1_cnt = 0
+    diff3_cnt = 1
+    for voltage in jolts:
+        if voltage - prev == 1:
+            diff1_cnt += 1
+        elif voltage - prev == 3:
+            diff3_cnt += 1
+        prev = voltage
+    return diff1_cnt * diff3_cnt
+
+
+
 def main(args):
     task_map = {"first": Task.FIRST, "second": Task.SECOND}
     task = task_map[args[1]]
@@ -424,6 +440,8 @@ def main(args):
         day_8(day, task)
     elif day == Puzzle.DAY_9:
         day_9(day, task)
+    elif day == Puzzle.DAY_10:
+        day_10(day, task)
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
