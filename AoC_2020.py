@@ -3,6 +3,7 @@ import re
 import copy
 from enum import Enum
 from operator import add  # day3
+import itertools
 
 
 class Task(Enum):
@@ -33,7 +34,7 @@ def read_numbers_from_file(puzzle):
 def read_strings_from_file(puzzle, keepends=False):
     filename = "input_{}.txt".format(puzzle.value)
     with open(filename, "r") as f:
-    # with open("input_day7_example.txt", "r") as f:
+    #  with open("input_day11_example.txt", "r") as f:
         data_list = f.read().splitlines(keepends=keepends)
     return data_list
 
@@ -71,6 +72,7 @@ def day_1(puzzle, task):
     for i in range(len(numbers)-1):
         num = numbers[i]
         result = find_additive_pair_in_list(2020-num, numbers[i+1:])
+
         if result:
             return result*num
 
@@ -442,6 +444,73 @@ def day_10(puzzle, task):
         return result
 
 
+@print_begin_end
+def day_11(puzzle, task):
+
+    def get_neighbour_coords(x,y):
+        def create_list(n, max_len):
+            l = [n-1, n, n+1]
+            if l[0] == -1:
+                l.pop(0)
+            if l[-1] == max_len:
+                l.pop()
+            return l
+
+        l1 = create_list(x, MAX_ROW)
+        l2 = create_list(y, MAX_COL)
+        neighbours = list(itertools.product(l1, l2))
+        return list(filter(lambda z: z != (x, y), neighbours))
+
+    def decide(matrix, x, y):
+        if matrix[x][y] == ".":
+            return "."
+        neighbour_coords = get_neighbour_coords(x, y)
+
+        empty_seat = 0
+        occup_seat = 0
+        floor = 0
+        for a, b in neighbour_coords:
+            if matrix[a][b] == "L":
+                empty_seat += 1
+            elif matrix[a][b] == "#":
+                occup_seat += 1
+            else:
+                floor += 1
+        if matrix[x][y] == "L" and occup_seat == 0:
+            return "#"
+        if matrix[x][y] == "#" and occup_seat >= 4:
+            return "L"
+        return matrix[x][y]
+
+    seat_strings = read_strings_from_file(puzzle)
+    grid = []
+    MAX_ROW = len(seat_strings)
+    MAX_COL = len(seat_strings[0])
+    for line in seat_strings:
+        grid.append(list(line))
+    cycle = 0
+    while True:
+        new_grid = []
+        for i in range(len(grid)):
+            new_line = []
+            for j in range(len(grid[i])):
+                new_line.append(decide(grid, i, j))
+            new_grid.append(new_line)
+        cycle += 1
+        if new_grid == grid:
+            break
+        else:
+            grid = copy.deepcopy(new_grid)
+
+    for line in new_grid:
+        print(line)
+    big_string = str(new_grid)
+
+    return big_string.count("#")
+
+
+
+
 def main(args):
     task_map = {"first": Task.FIRST, "second": Task.SECOND}
     task = task_map[args[1]]
@@ -470,6 +539,8 @@ def main(args):
         day_9(day, task)
     elif day == Puzzle.DAY_10:
         day_10(day, task)
+    elif day == Puzzle.DAY_11:
+        day_11(day, task)
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
