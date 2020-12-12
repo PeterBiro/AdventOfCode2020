@@ -34,7 +34,7 @@ def read_numbers_from_file(puzzle):
 def read_strings_from_file(puzzle, keepends=False):
     filename = "input_{}.txt".format(puzzle.value)
     with open(filename, "r") as f:
-    #  with open("input_day11_example.txt", "r") as f:
+    # with open("input_day11_example.txt", "r") as f:
         data_list = f.read().splitlines(keepends=keepends)
     return data_list
 
@@ -461,24 +461,43 @@ def day_11(puzzle, task):
         neighbours = list(itertools.product(l1, l2))
         return list(filter(lambda z: z != (x, y), neighbours))
 
-    def decide(matrix, x, y):
+    def decide_1(matrix, x, y):
         if matrix[x][y] == ".":
             return "."
         neighbour_coords = get_neighbour_coords(x, y)
-
-        empty_seat = 0
         occup_seat = 0
-        floor = 0
         for a, b in neighbour_coords:
-            if matrix[a][b] == "L":
-                empty_seat += 1
-            elif matrix[a][b] == "#":
+            if matrix[a][b] == "#":
                 occup_seat += 1
-            else:
-                floor += 1
         if matrix[x][y] == "L" and occup_seat == 0:
             return "#"
         if matrix[x][y] == "#" and occup_seat >= 4:
+            return "L"
+        return matrix[x][y]
+
+    def decide_2(matrix, x, y):
+        def can_see_sy(matrix, x, y, v):
+            a = x + v[0]
+            b = y + v[1]
+            while 0 <= a < MAX_ROW and 0 <= b < MAX_COL:
+                if matrix[a][b] == "#":
+                    return True
+                if matrix[a][b] == "L":
+                    return False
+                a += v[0]
+                b += v[1]
+            return False
+
+        if matrix[x][y] == ".":
+            return "."
+        look_directions = [(-1, -1), (-1, 0), (-1, +1), (0, -1), (0, +1), (+1, -1), (+1, 0), (+1, +1)]
+        occup_seat = 0
+        for direction in look_directions:
+            if can_see_sy(matrix, x, y, direction):
+                occup_seat += 1
+        if matrix[x][y] == "L" and occup_seat == 0:
+            return "#"
+        if matrix[x][y] == "#" and occup_seat >= 5:
             return "L"
         return matrix[x][y]
 
@@ -488,25 +507,29 @@ def day_11(puzzle, task):
     MAX_COL = len(seat_strings[0])
     for line in seat_strings:
         grid.append(list(line))
+    if task == Task.FIRST:
+        decide_func = decide_1
+    else:
+        decide_func = decide_2
     cycle = 0
     while True:
         new_grid = []
+        cycle += 1
+        print("Cycle: {}".format(cycle))
         for i in range(len(grid)):
             new_line = []
             for j in range(len(grid[i])):
-                new_line.append(decide(grid, i, j))
+                new_line.append(decide_func(grid, i, j))
             new_grid.append(new_line)
-        cycle += 1
         if new_grid == grid:
             break
         else:
             grid = copy.deepcopy(new_grid)
-
-    for line in new_grid:
-        print(line)
     big_string = str(new_grid)
 
     return big_string.count("#")
+
+
 
 
 
