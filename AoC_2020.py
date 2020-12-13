@@ -2,7 +2,7 @@ import sys
 import re
 import copy
 from enum import Enum
-from operator import add  # day3
+from operator import add, mul  # day3 & day 12
 import itertools
 
 
@@ -530,6 +530,52 @@ def day_11(puzzle, task):
     return big_string.count("#")
 
 
+@print_begin_end
+def day_12(puzzle, task):
+
+    pos = [0, 0]
+    heading = ["E", "S", "W", "N"]
+    heading_ptr = 0
+    compass = {"N": [0, 1], "E": [1, 0], "S": [0, -1], "W": [-1, 0]}
+
+    navi_orders = read_strings_from_file(puzzle)
+    if task == Task.FIRST:
+        for order in navi_orders:
+            if order[0] in ["E", "S", "W", "N", "F"]:
+                to_vec = compass[heading[heading_ptr]] if order[0] == "F" else compass[order[0]]
+                vec = list(map(mul, to_vec, [int(order[1:]), int(order[1:])] ))
+                pos = list(map(add, pos, vec))
+            else:
+                if order[0] == "R":
+                    heading_ptr = ( heading_ptr + int(int(order[1:])/90)) % 4
+                else:
+                    heading_ptr = ( heading_ptr - int(int(order[1:])/90)) % 4
+        return abs(pos[0]) + abs(pos[1])
+    else:
+        wp = [10, 1]
+        for order in navi_orders:
+            if order[0] in ["E", "S", "W", "N"]:
+                vec = list(map(mul, compass[order[0]], [int(order[1:]), int(order[1:])] ))
+                wp = list(map(add, wp, vec))
+            elif order[0] == "F":
+                vec = list(map(mul, wp, [int(order[1:]), int(order[1:])]))
+                pos = list(map(add, pos, vec))
+            else:
+                times = int(int(order[1:])/90) % 4
+                if order[0] == "R":
+                    for i in range(times):
+                        tmp = wp[0]
+                        wp[0] = wp[1]
+                        wp[1] = -1 * tmp
+                else:
+                    for i in range(times):
+                        tmp = wp[0]
+                        wp[0] = -1*wp[1]
+                        wp[1] = tmp
+        return abs(pos[0]) + abs(pos[1])
+
+
+
 
 
 
@@ -564,6 +610,8 @@ def main(args):
         day_10(day, task)
     elif day == Puzzle.DAY_11:
         day_11(day, task)
+    elif day == Puzzle.DAY_12:
+        day_12(day, task)
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
