@@ -603,9 +603,33 @@ def day_13(puzzle, task):
         departs = find_departures(timestamp, buses)
         departs.sort(key= lambda x: x[1])
         return (departs[0][1]-timestamp) * departs[0][0]
+    else:
+        def parse_input(puzzle):
+            lines = read_strings_from_file(puzzle)
+            b = lines[1].split(",")
+            ret_list = []
+            for i in range(len(b)):
+                if b[i] == "x":
+                    continue
+                else:
+                    ret_list.append({"nr": int(b[i]), "offset": i % int(b[i])})
+            return ret_list
 
-
-
+        buses = parse_input(puzzle)
+        buses.sort(key=lambda x: x["nr"])
+        result = 0
+        step = 1
+        bus = buses.pop(0)
+        while True:
+            if (result + bus["offset"]) % bus["nr"] == 0:
+                step *= bus["nr"]
+                try:
+                    bus = buses.pop(0)
+                except IndexError:
+                    break
+            else:
+                result += step
+        return result
 
 
 def main(args):
