@@ -24,6 +24,10 @@ class Puzzle(Enum):
     DAY_10 = "day10"
     DAY_11 = "day11"
     DAY_12 = "day12"
+    DAY_13 = "day13"
+    DAY_14 = "day14"
+    DAY_15 = "day15"
+    DAY_16 = "day16"
 
 
 def read_numbers_from_file(puzzle):
@@ -574,7 +578,31 @@ def day_12(puzzle, task):
                         wp[1] = tmp
         return abs(pos[0]) + abs(pos[1])
 
+@print_begin_end
+def day_13(puzzle, task):
+    if task == Task.FIRST:
+        def parse_input(puzzle):
+            lines = read_strings_from_file(puzzle)
+            t = int(lines[0])
+            b = lines[1].split(",")
+            b = list(filter(lambda y: y != "x", b))
+            b = list(map(lambda y: int(y), b))
+            return t, b
 
+        def find_departures(timestamp, buses):
+            d = []
+            for bus in buses:
+                remainder = timestamp % bus
+                if remainder == 0:
+                    d.append((bus, timestamp))
+                else:
+                    d.append((bus, timestamp + (bus - remainder)))
+            return d
+
+        timestamp, buses = parse_input(puzzle)
+        departs = find_departures(timestamp, buses)
+        departs.sort(key= lambda x: x[1])
+        return (departs[0][1]-timestamp) * departs[0][0]
 
 
 
@@ -585,7 +613,8 @@ def main(args):
     task = task_map[args[1]]
     day_map ={"day1": Puzzle.DAY_1, "day2": Puzzle.DAY_2, "day3": Puzzle.DAY_3, "day4": Puzzle.DAY_4,
               "day5": Puzzle.DAY_5, "day6": Puzzle.DAY_6, "day7": Puzzle.DAY_7, "day8": Puzzle.DAY_8,
-              "day9": Puzzle.DAY_9, "day10": Puzzle.DAY_10, "day11": Puzzle.DAY_11, "day12": Puzzle.DAY_12}
+              "day9": Puzzle.DAY_9, "day10": Puzzle.DAY_10, "day11": Puzzle.DAY_11, "day12": Puzzle.DAY_12,
+              "day13": Puzzle.DAY_13, "day10": Puzzle.DAY_14, "day11": Puzzle.DAY_15, "day12": Puzzle.DAY_16}
     day = day_map[args[0]]
 
     if day == Puzzle.DAY_1:
@@ -612,6 +641,8 @@ def main(args):
         day_11(day, task)
     elif day == Puzzle.DAY_12:
         day_12(day, task)
+    elif day == Puzzle.DAY_13:
+        day_13(day, task)
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
