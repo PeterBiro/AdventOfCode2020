@@ -578,6 +578,7 @@ def day_12(puzzle, task):
                         wp[1] = tmp
         return abs(pos[0]) + abs(pos[1])
 
+
 @print_begin_end
 def day_13(puzzle, task):
     if task == Task.FIRST:
@@ -632,13 +633,50 @@ def day_13(puzzle, task):
         return result
 
 
+@print_begin_end
+def day_14(puzzle, task):
+
+    def do_masking(value, mask):
+        result = ""
+        print(value)
+        value = "{0:036b}".format(value)
+        print(value)
+        print(mask)
+        for value_bit, mask_bit in zip(value[::-1], mask[::-1]):
+            if mask_bit == "X":
+                result = value_bit + result
+            else:
+                result = mask_bit + result
+        print(result)
+        print("--------------")
+        return result
+
+    input_lines = read_strings_from_file(puzzle)
+    memory = {}
+    mask = "X" * 36
+
+    for line in input_lines:
+        if line.startswith("mask"):
+            mask = line[7:]
+            print(mask)
+            continue
+        pattern = r"^mem\[(?P<location>\d+)\] = (?P<value>\d+)"
+        x = re.match(pattern, line)
+        memory[int(x.groupdict()["location"])] = int(do_masking(int(x.groupdict()["value"]), mask),2)
+    res = 0
+    for k, v in memory.items():
+        res += v
+
+    return res
+
+
 def main(args):
     task_map = {"first": Task.FIRST, "second": Task.SECOND}
     task = task_map[args[1]]
-    day_map ={"day1": Puzzle.DAY_1, "day2": Puzzle.DAY_2, "day3": Puzzle.DAY_3, "day4": Puzzle.DAY_4,
+    day_map = {"day1": Puzzle.DAY_1, "day2": Puzzle.DAY_2, "day3": Puzzle.DAY_3, "day4": Puzzle.DAY_4,
               "day5": Puzzle.DAY_5, "day6": Puzzle.DAY_6, "day7": Puzzle.DAY_7, "day8": Puzzle.DAY_8,
               "day9": Puzzle.DAY_9, "day10": Puzzle.DAY_10, "day11": Puzzle.DAY_11, "day12": Puzzle.DAY_12,
-              "day13": Puzzle.DAY_13, "day10": Puzzle.DAY_14, "day11": Puzzle.DAY_15, "day12": Puzzle.DAY_16}
+              "day13": Puzzle.DAY_13, "day14": Puzzle.DAY_14, "day15": Puzzle.DAY_15, "day16": Puzzle.DAY_16}
     day = day_map[args[0]]
 
     if day == Puzzle.DAY_1:
@@ -667,6 +705,8 @@ def main(args):
         day_12(day, task)
     elif day == Puzzle.DAY_13:
         day_13(day, task)
+    elif day == Puzzle.DAY_14:
+        day_14(day, task)
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
