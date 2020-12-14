@@ -638,18 +638,43 @@ def day_14(puzzle, task):
 
     def do_masking(value, mask):
         result = ""
-        print(value)
         value = "{0:036b}".format(value)
-        print(value)
-        print(mask)
         for value_bit, mask_bit in zip(value[::-1], mask[::-1]):
             if mask_bit == "X":
                 result = value_bit + result
             else:
                 result = mask_bit + result
-        print(result)
-        print("--------------")
         return result
+
+    def do_masking_2(location, mask):
+
+        def glue(value, floating=False):
+            nonlocal loc_list
+            if floating and not loc_list:
+                loc_list = ["0", "1"]
+                return
+            if not loc_list:
+                loc_list = [value]
+                return
+            newbies = []
+            for loc in loc_list:
+                if floating:
+                    newbies.append("0"+loc)
+                    newbies.append("1"+loc)
+                else:
+                    newbies.append(value+loc)
+            loc_list = newbies[:]
+
+        loc_list = []
+        location = "{0:036b}".format(location)
+        for loc_bit, mask_bit in zip(location[::-1], mask[::-1]):
+            if mask_bit == "0":
+                glue(loc_bit)
+            if mask_bit == "1":
+                glue("1")
+            if mask_bit == "X":
+                glue("barmi", True)
+        return loc_list
 
     input_lines = read_strings_from_file(puzzle)
     memory = {}
@@ -658,15 +683,18 @@ def day_14(puzzle, task):
     for line in input_lines:
         if line.startswith("mask"):
             mask = line[7:]
-            print(mask)
             continue
         pattern = r"^mem\[(?P<location>\d+)\] = (?P<value>\d+)"
         x = re.match(pattern, line)
-        memory[int(x.groupdict()["location"])] = int(do_masking(int(x.groupdict()["value"]), mask),2)
+        if task == Task.FIRST:
+            memory[int(x.groupdict()["location"])] = int(do_masking(int(x.groupdict()["value"]), mask),2)
+        else:
+            addresses = do_masking_2(int(x.groupdict()["location"]), mask)
+            for addr in addresses:
+                memory[addr] = int(x.groupdict()["value"])
     res = 0
     for k, v in memory.items():
         res += v
-
     return res
 
 
