@@ -702,20 +702,27 @@ def day_14(puzzle, task):
 def day_15(puzzle, task):
     example = [[0, 3, 6]]
     the_list = [0, 5, 4, 1, 10, 14, 7]
-    #  the_list = example[0]
+    # the_list = example[0]
 
-    goal = 2020
+    register = {}
+    for i in range(1, len(the_list)+1):
+        register[the_list[i-1]] = (i, 0)
+    last_spoken = the_list[-1]
+
+    goal = 30000000 if task == Task.SECOND else 2020
 
     for turn in range(len(the_list)+1, goal+1):
-        last_spoken = the_list[-1]
-        if the_list.count(last_spoken) == 1:
-            the_list.append(0)
+        if turn % 1000 == 0:
+            print("turn: {} and {:.2f}%".format(turn, turn/goal*100))
+
+        if register[last_spoken][1] == 0:
+            register[0] = (turn, register[0][0] if 0 in register else 0)
+            last_spoken = 0
         else:
-            tmp_list = list(reversed(the_list[:-1:]))
-            idx = tmp_list.index(last_spoken)
-            idx = len(the_list) - idx
-            the_list.append(turn - idx)
-    return the_list[-1]
+            new_num = register[last_spoken][0] - register[last_spoken][1]
+            register[new_num] = (turn, register[new_num][0] if new_num in register else 0)
+            last_spoken = new_num
+    return last_spoken
 
 
 def main(args):
