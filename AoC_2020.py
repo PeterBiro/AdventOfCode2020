@@ -698,6 +698,26 @@ def day_14(puzzle, task):
     return res
 
 
+@print_begin_end
+def day_15(puzzle, task):
+    example = [[0, 3, 6]]
+    the_list = [0, 5, 4, 1, 10, 14, 7]
+    #  the_list = example[0]
+
+    goal = 2020
+
+    for turn in range(len(the_list)+1, goal+1):
+        last_spoken = the_list[-1]
+        if the_list.count(last_spoken) == 1:
+            the_list.append(0)
+        else:
+            tmp_list = list(reversed(the_list[:-1:]))
+            idx = tmp_list.index(last_spoken)
+            idx = len(the_list) - idx
+            the_list.append(turn - idx)
+    return the_list[-1]
+
+
 def main(args):
     task_map = {"first": Task.FIRST, "second": Task.SECOND}
     task = task_map[args[1]]
@@ -735,6 +755,8 @@ def main(args):
         day_13(day, task)
     elif day == Puzzle.DAY_14:
         day_14(day, task)
+    elif day == Puzzle.DAY_15:
+        day_15(day, task)
     else:
         print("Unknown argument: {}, and the full list: {}".format(args[0], args))
 
